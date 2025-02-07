@@ -71,10 +71,12 @@ def classify_number(number: int|str|None=None):
             "error":True,
         },status_code=400, )
     try:
-        num_int = int(number)
+        int(number)
     except ValueError:
         # Handle non-numeric inputs
         return JSONResponse({"number": "alphabet", "error": True}, status_code=400)
+    if number < 0:
+        return JSONResponse({"number": "negative integer", "error": True}, status_code=400)
     if str(number).replace('.', '', 1).isdigit() and '.' in str(number):
         return JSONResponse(
             {"number": "float", "error": True}, status_code=400
