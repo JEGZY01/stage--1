@@ -81,6 +81,10 @@ def classify_number(number: int|str|None=None):
         return JSONResponse(
             {"number": "float", "error": True}, status_code=400
         )
+    if number.replace('.', '', 1).isdigit() and '.' in number:
+        return JSONResponse(
+            {"number": "float", "error": True}, status_code=400
+        )
 
 
         # Check for float input
