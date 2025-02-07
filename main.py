@@ -58,9 +58,11 @@ def fun_fact(number: int) -> str:
     response = requests.get(f"http://numbersapi.com/{number}/math")
     return response.text if response.ok else "No fun fact available."
 
-@app.get("/api/classify-number")
-def classify_number(number: int):
+@app.get("/api/classify-number",status_code=200)
+def classify_number(number: int|None=None):
     # Check for valid input
+    if not number:
+        raise HTTPException(status_code=400, detail="Please provide a number.")
     if not isinstance(number, int):
         raise HTTPException(status_code=400, detail="Invalid input. Please provide a number.")
     return {
