@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException,status,params
+from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 import requests
+from fastapi.responses import JSONResponse
 
 
 app = FastAPI()
@@ -54,23 +55,42 @@ def properties(number):
 
     return number_properties
 
-def fun_fact(number: int) -> str:
-    response = requests.get(f"http://numbersapi.com/{number}/math")
-    return response.text if response.ok else "No fun fact available."
+def fun_fact(number: int) -> str|None:
+    try:
+        response = requests.get(f"http://numbersapi.com/{number}/math")
+        return response.text if response.ok else "No fun fact available."
+    except:
+        return None
 
 @app.get("/api/classify-number",status_code=200)
-def classify_number(number: int|None=None):
+def classify_number(number: int|str|None=None):
     # Check for valid input
     if not number:
-        raise HTTPException(status_code=400, detail="Please provide a number.")
+        return JSONResponse({
+            "number":"Pls provide a number in query param",
+            "error":True,
+        },status_code=400, )
+    try:
+        num_int = int(number)
+    except ValueError:
+        # Handle non-numeric inputs
+        return JSONResponse({"number": "alphabet", "error": True}, status_code=400)
+    if str(number).replace('.', '', 1).isdigit() and '.' in str(number):
+        return JSONResponse(
+            {"number": "float", "error": True}, status_code=400
+        )
+
+
+        # Check for float input
     if not isinstance(number, int):
-        raise HTTPException(status_code=400, detail="Invalid input. Please provide a number.")
+        return JSONResponse({"number":type(number),"error":True},status_code=400)
+
     return {
         "number": number,
         "is_prime": is_prime(number),
         "is_perfect": is_perfect(number),
         "properties": properties(number),
         "digit_sum": digit_sum(number),
-        "fun_fact": fun_fact(number),
+        "fun_fact": fun_fact(number) or "No fun fact available",
     }
 
