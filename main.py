@@ -65,7 +65,7 @@ def fun_fact(number: int) -> str|None:
 @app.get("/api/classify-number",status_code=200)
 def classify_number(number: int|str|None=None):
     # Check for valid input
-    if not number:
+    if number is None:
         return JSONResponse({
             "number":"Pls provide a number in query param",
             "error":True,
