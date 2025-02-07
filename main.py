@@ -72,6 +72,3 @@ def classify_number(number: int):
         "fun_fact": fun_fact(number),
     }
 
-@app.get('/')
-def health_check():
-    return {"hello":"world"}
